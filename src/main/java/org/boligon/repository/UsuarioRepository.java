@@ -2,6 +2,7 @@ package org.boligon.repository;
 
 import org.boligon.configbanco.ConexaoBanco;
 import org.boligon.entity.Usuario;
+import org.boligon.entity.PerfilUsuario;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,7 +23,7 @@ public class UsuarioRepository {
             statement.setString(1, usuario.getNome());
             statement.setString(2, usuario.getEmail());
             statement.setString(3, usuario.getSenha());
-            statement.setString(4, usuario.getPerfil());
+            statement.setString(4, usuario.getPerfil().getValor());
             statement.setBoolean(5, usuario.getAtivo());
 
             statement.executeUpdate();
@@ -109,7 +110,7 @@ public class UsuarioRepository {
         usuario.setNome(resultSet.getString("nome"));
         usuario.setEmail(resultSet.getString("email"));
         usuario.setSenha(resultSet.getString("senha"));
-        usuario.setPerfil(resultSet.getString("perfil"));
+        usuario.setPerfil(PerfilUsuario.valueOf(resultSet.getString("perfil")));
         usuario.setAtivo(resultSet.getBoolean("ativo"));
         return usuario;
     }

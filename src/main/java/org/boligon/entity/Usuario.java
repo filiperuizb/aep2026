@@ -5,7 +5,7 @@ public class Usuario {
     private String nome;
     private String email;
     private String senha;
-    private String perfil;
+    private PerfilUsuario perfil;
     private boolean ativo;
 
     public Usuario() {
@@ -43,11 +43,11 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public String getPerfil() {
+    public PerfilUsuario getPerfil() {
         return perfil;
     }
 
-    public void setPerfil(String perfil) {
+    public void setPerfil(PerfilUsuario perfil) {
         this.perfil = perfil;
     }
 
