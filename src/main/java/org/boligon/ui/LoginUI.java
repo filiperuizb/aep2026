@@ -34,7 +34,7 @@ public class LoginUI {
 
     private void exibirMenu() {
         System.out.println("\n╔════════════════════════════════════╗");
-        System.out.println("║      OBSERVAAÇÃO - SISTEMA         ║");
+        System.out.println("║      OBSERVA-AÇÃO - SISTEMA         ║");
         System.out.println("╚════════════════════════════════════╝");
         System.out.println("\n[1] Login");
         System.out.println("[2] Registrar");
