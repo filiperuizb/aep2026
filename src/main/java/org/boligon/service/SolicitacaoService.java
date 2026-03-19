@@ -1,7 +1,6 @@
 package org.boligon.service;
 
 import org.boligon.entity.Solicitacao;
-import org.boligon.exception.RegraNegocioException;
 import org.boligon.exception.ValidacaoException;
 import org.boligon.repository.SolicitacaoRepository;
 
@@ -65,10 +64,6 @@ public class SolicitacaoService {
 
         if (solicitacao.getPrioridade() == null) {
             throw new ValidacaoException("A prioridade é obrigatória.");
-        }
-
-        if (solicitacao.isAnonima() && solicitacao.getDescricao().trim().length() < 10) {
-            throw new RegraNegocioException("Solicitações anônimas exigem descrição mais detalhada.");
         }
     }
 

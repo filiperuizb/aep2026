@@ -2,6 +2,7 @@ package org.boligon.service;
 
 import org.boligon.entity.Usuario;
 import org.boligon.enums.PerfilUsuario;
+import org.boligon.exception.ValidacaoException;
 import org.boligon.repository.UsuarioRepository;
 
 public class AuthService {
@@ -10,7 +11,7 @@ public class AuthService {
 
     public void registrar(String nome, String email, String senha) {
         if(usuarioRepository.existePorEmail(email)) {
-            throw new RuntimeException("Já existe um usuário com o email vinculado.");
+            throw new ValidacaoException("Já existe um usuário com o email vinculado.");
         }
 
         Usuario novoUsuario = new Usuario();
@@ -27,15 +28,15 @@ public class AuthService {
         Usuario usuario = usuarioRepository.buscarPorEmail(email.trim().toLowerCase());
 
         if(usuario == null) {
-            throw new RuntimeException("Usuário não encontrado.");
+            throw new ValidacaoException("Usuário não encontrado.");
         }
 
         if(!usuario.getSenha().equals(senha)) {
-            throw new RuntimeException("Senha inválida");
+            throw new ValidacaoException("Senha inválida");
         }
 
         if(!usuario.getAtivo()) {
-            throw new RuntimeException("Usuário Inativo.");
+            throw new ValidacaoException("Usuário Inativo.");
         }
 
         return usuario;
