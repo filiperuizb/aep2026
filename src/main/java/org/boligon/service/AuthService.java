@@ -1,6 +1,7 @@
 package org.boligon.service;
 
 import org.boligon.entity.Usuario;
+import org.boligon.entity.PerfilUsuario;
 import org.boligon.repository.UsuarioRepository;
 
 public class AuthService {
@@ -16,7 +17,7 @@ public class AuthService {
         novoUsuario.setNome(nome);
         novoUsuario.setEmail(email.trim().toLowerCase());
         novoUsuario.setSenha(senha);
-        novoUsuario.setPerfil("CIDADAO");
+        novoUsuario.setPerfil(PerfilUsuario.CIDADAO);
         novoUsuario.setAtivo(true);
 
         usuarioRepository.salvar(novoUsuario);
