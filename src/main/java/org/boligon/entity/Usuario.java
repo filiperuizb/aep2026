@@ -1,5 +1,7 @@
 package org.boligon.entity;
 
+import org.boligon.enums.PerfilUsuario;
+
 public class Usuario {
     private Long id;
     private String nome;

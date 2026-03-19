@@ -2,7 +2,7 @@ package org.boligon.repository;
 
 import org.boligon.configbanco.ConexaoBanco;
 import org.boligon.entity.Usuario;
-import org.boligon.entity.PerfilUsuario;
+import org.boligon.enums.PerfilUsuario;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

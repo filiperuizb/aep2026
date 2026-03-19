@@ -1,7 +1,7 @@
 package org.boligon.service;
 
 import org.boligon.entity.Usuario;
-import org.boligon.entity.PerfilUsuario;
+import org.boligon.enums.PerfilUsuario;
 import org.boligon.repository.UsuarioRepository;
 
 public class AuthService {

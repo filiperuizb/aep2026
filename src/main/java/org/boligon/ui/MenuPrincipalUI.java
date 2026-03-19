@@ -1,7 +1,6 @@
 package org.boligon.ui;
 
 import org.boligon.entity.Usuario;
-import org.boligon.entity.PerfilUsuario;
 
 import java.util.Scanner;
 

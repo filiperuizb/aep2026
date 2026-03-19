@@ -1,4 +1,4 @@
-package org.boligon.entity;
+package org.boligon.enums;
 
 public enum PerfilUsuario {
     CIDADAO("CIDADAO"),
