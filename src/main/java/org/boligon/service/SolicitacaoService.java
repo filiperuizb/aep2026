@@ -1,10 +1,14 @@
 package org.boligon.service;
 
 import org.boligon.entity.Solicitacao;
+import org.boligon.entity.Usuario;
+import org.boligon.enums.Prioridade;
+import org.boligon.enums.StatusSolicitacao;
 import org.boligon.exception.ValidacaoException;
 import org.boligon.repository.SolicitacaoRepository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -13,11 +17,16 @@ public class SolicitacaoService {
     private final SolicitacaoRepository solicitacaoRepository = new SolicitacaoRepository();
 
 
-    public void criarSolicitacao (Solicitacao novaSolicitacao) {
-        this.validarSolicitacao(novaSolicitacao);
+    public void criarSolicitacao(Solicitacao novaSolicitacao, Usuario usuarioLogado) {
+        validarSolicitacao(novaSolicitacao);
+        definirAutorSolicitacao(novaSolicitacao, usuarioLogado);
 
+        novaSolicitacao.setProtocolo(gerarProtocolo());
         novaSolicitacao.setDataCriacao(LocalDateTime.now());
+        novaSolicitacao.setStatus(StatusSolicitacao.ABERTO);
+        novaSolicitacao.setPrazoSla(calcularPrazoSla(novaSolicitacao.getPrioridade()));
 
+        solicitacaoRepository.salvar(novaSolicitacao);
     }
 
     public Solicitacao buscarPorProtocolo(String protocolo) {
@@ -67,5 +76,24 @@ public class SolicitacaoService {
         }
     }
 
+    private void definirAutorSolicitacao(Solicitacao solicitacao, Usuario usuarioLogado) {
+        if(solicitacao.isAnonima()) {
+            solicitacao.setUsuarioId(null);
+            return;
+        }
 
+        solicitacao.setUsuarioId(usuarioLogado.getId());
+    }
+
+    private String gerarProtocolo() {
+        String data = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        long numero = System.currentTimeMillis() % 100000;
+
+        return "OBS - " + data + "-" + numero;
+    }
+
+    private LocalDateTime calcularPrazoSla(Prioridade prioridade) {
+        return LocalDateTime.now().plusDays(prioridade.getDiasSla());
+    }
 }
