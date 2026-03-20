@@ -5,8 +5,6 @@ import org.boligon.entity.Usuario;
 import org.boligon.enums.Categoria;
 import org.boligon.enums.Prioridade;
 import org.boligon.service.SolicitacaoService;
-import org.boligon.util.ConsoleUtils;
-import org.boligon.util.InputUtils;
 
 import java.util.Scanner;
 
@@ -182,7 +180,7 @@ public class CidadaoUI {
                     System.out.println("├─ Categoria: " + s.getCategoria().getValor());
                     System.out.println("├─ Bairro: " + s.getBairro());
                     System.out.println("├─ Status: " + s.getStatus());
-                    System.out.println("└─ Data: " + s.getDataCriacao());
+                    System.out.println("└─ Data: " + s.exibirDataCriacaoFormatada());
                 }
             }
         } catch (Exception e) {
@@ -203,8 +201,8 @@ public class CidadaoUI {
         System.out.println("Bairro: " + solicitacao.getBairro());
         System.out.println("Prioridade: " + solicitacao.getPrioridade());
         System.out.println("Status: " + solicitacao.getStatus());
-        System.out.println("Data de Criação: " + solicitacao.getDataCriacao());
-        System.out.println("Prazo SLA: " + solicitacao.getPrazoSla());
+        System.out.println("Data de Criação: " + solicitacao.exibirDataCriacaoFormatada());
+        System.out.println("Prazo SLA: " + solicitacao.exibirPrazoSlaFormatada());
 
         if (solicitacao.isAnonima()) {
             System.out.println("Autor: Anônimo");

@@ -48,8 +48,8 @@ public class SolicitacaoRepository {
                 statement.setNull(9, Types.BIGINT);
             }
 
-            statement.setTimestamp(10, Timestamp.valueOf(solicitacao.getDataCriacao()));
-            statement.setTimestamp(11, Timestamp.valueOf(solicitacao.getPrazoSla()));
+            statement.setTimestamp(10, Timestamp.valueOf(solicitacao.exibirDataCriacaoFormatada()));
+            statement.setTimestamp(11, Timestamp.valueOf(solicitacao.exibirPrazoSlaFormatada()));
             statement.setString(12, solicitacao.getJustificativaAtraso());
 
             statement.executeUpdate();
