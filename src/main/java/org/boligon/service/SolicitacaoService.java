@@ -1,9 +1,11 @@
 package org.boligon.service;
 
+import org.boligon.dto.HistoricoStatusDTO;
 import org.boligon.entity.Solicitacao;
 import org.boligon.entity.Usuario;
 import org.boligon.enums.Prioridade;
 import org.boligon.enums.StatusSolicitacao;
+import org.boligon.exception.EntidadeNaoEncontradaException;
 import org.boligon.exception.ValidacaoException;
 import org.boligon.repository.SolicitacaoRepository;
 
@@ -15,6 +17,7 @@ import java.util.List;
 public class SolicitacaoService {
 
     private final SolicitacaoRepository solicitacaoRepository = new SolicitacaoRepository();
+    private final HistoricoStatusService historicoStatusService = new HistoricoStatusService();
 
 
     public void criarSolicitacao(Solicitacao novaSolicitacao, Usuario usuarioLogado) {
@@ -95,5 +98,29 @@ public class SolicitacaoService {
 
     private LocalDateTime calcularPrazoSla(Prioridade prioridade) {
         return LocalDateTime.now().plusDays(prioridade.getDiasSla());
+    }
+
+    public void atualizarStatus(HistoricoStatusDTO dto) {
+
+        this.historicoStatusService.validarAtualizacaoStatus(dto);
+
+        Solicitacao solicitacao = solicitacaoRepository.buscarPorId(dto.getSolicitacaoId());
+
+        if (solicitacao == null) {
+            throw new EntidadeNaoEncontradaException("Solicitação não encontrada.");
+        }
+
+        StatusSolicitacao statusAnterior = solicitacao.getStatus();
+
+        solicitacaoRepository.atualizarStatus(
+                dto.getSolicitacaoId(),
+                dto.getStatusNovo(),
+                null
+        );
+
+        historicoStatusService.registrarMovimentacao(
+                dto,
+                statusAnterior
+        );
     }
 }
