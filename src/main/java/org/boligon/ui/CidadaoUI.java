@@ -4,6 +4,7 @@ import org.boligon.entity.Solicitacao;
 import org.boligon.entity.Usuario;
 import org.boligon.enums.Categoria;
 import org.boligon.enums.Prioridade;
+import org.boligon.service.HistoricoStatusService;
 import org.boligon.service.SolicitacaoService;
 
 import java.util.Scanner;
@@ -12,6 +13,7 @@ public class CidadaoUI {
 
     private final Scanner scanner = new Scanner(System.in);
     private final SolicitacaoService solicitacaoService = new SolicitacaoService();
+    private final HistoricoStatusService historicoStatusService = new HistoricoStatusService();
     private final Usuario usuarioLogado;
 
     public CidadaoUI(Usuario usuarioLogado) {
@@ -65,32 +67,25 @@ public class CidadaoUI {
         try {
             Solicitacao novaSolicitacao = new Solicitacao();
 
-            // Categoria
             novaSolicitacao.setCategoria(selecionarCategoria());
 
-            // Descrição
             System.out.print("\nDescrição do problema: ");
             String descricao = scanner.nextLine().trim();
             novaSolicitacao.setDescricao(descricao);
 
-            // Localização
             System.out.print("Localização (rua e número): ");
             String localizacao = scanner.nextLine().trim();
             novaSolicitacao.setLocalizacao(localizacao);
 
-            // Bairro
             System.out.print("Bairro: ");
             String bairro = scanner.nextLine().trim();
             novaSolicitacao.setBairro(bairro);
 
-            // Prioridade
             novaSolicitacao.setPrioridade(selecionarPrioridade());
 
-            // Define se é anônima
             boolean isAnonimo = usuarioLogado.getPerfil().equals(org.boligon.enums.PerfilUsuario.ANONIMO);
             novaSolicitacao.setAnonima(isAnonimo);
 
-            // Criar solicitação
             solicitacaoService.criarSolicitacao(novaSolicitacao, usuarioLogado);
 
             System.out.println("\n✓ Solicitação criada com sucesso!");
@@ -159,6 +154,19 @@ public class CidadaoUI {
         try {
             Solicitacao solicitacao = solicitacaoService.buscarPorProtocolo(protocolo);
             exibirDetalhes(solicitacao);
+            
+            System.out.println("\n--- HISTÓRICO DE ALTERAÇÕES ---");
+            var historico = historicoStatusService.listarPorSolicitacaoId(solicitacao.getId());
+            
+            if (historico.isEmpty()) {
+                System.out.println("Nenhuma alteração registrada.");
+            } else {
+                for (var h : historico) {
+                    System.out.println("\n├─ Data: " + h.getDataMovimentacao());
+                    System.out.println("├─ Status: " + h.getStatusAnterior() + " → " + h.getStatusNovo());
+                    System.out.println("└─ Comentário: " + h.getComentario());
+                }
+            }
         } catch (Exception e) {
             System.out.println("\n✗ " + e.getMessage());
         }

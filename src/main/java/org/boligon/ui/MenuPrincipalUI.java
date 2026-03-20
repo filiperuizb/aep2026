@@ -23,9 +23,10 @@ public class MenuPrincipalUI {
     }
 
     private void exibirMenu() {
+        String perfilTexto = obterPerfilFormatado();
         System.out.println("\n╔════════════════════════════════════╗");
         System.out.println("║  Bem-vindo, " + usuarioLogado.getNome());
-        System.out.println("║  Perfil: " + usuarioLogado.getPerfil());
+        System.out.println("║  Perfil: " + perfilTexto);
         System.out.println("╚════════════════════════════════════╝");
 
         switch (usuarioLogado.getPerfil()) {
@@ -48,6 +49,14 @@ public class MenuPrincipalUI {
         }
 
         System.out.print("\nOpção: ");
+    }
+
+    private String obterPerfilFormatado() {
+        return switch (usuarioLogado.getPerfil()) {
+            case CIDADAO -> "Cidadão";
+            case GESTOR -> "Gestor";
+            case ANONIMO -> "Anônimo";
+        };
     }
 
     private void processarOpcao(String opcao) {
@@ -80,9 +89,10 @@ public class MenuPrincipalUI {
 
     private void processarMenuGestor(String opcao) {
         switch (opcao) {
-            case "1" -> System.out.println("\n▶ [Em desenvolvimento]");
-            case "2" -> System.out.println("\n▶ [Em desenvolvimento]");
-            case "3" -> System.out.println("\n▶ [Em desenvolvimento]");
+            case "1", "2", "3" -> {
+                GestorUI gestorUI = new GestorUI(usuarioLogado);
+                gestorUI.exibirMenuGestor();
+            }
             case "0" -> {
                 System.out.println("\nEncerrando...");
                 executando = false;
