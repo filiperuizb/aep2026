@@ -66,9 +66,10 @@ public class MenuPrincipalUI {
 
     private void processarMenuCidadao(String opcao) {
         switch (opcao) {
-            case "1" -> System.out.println("\n▶ [Em desenvolvimento]");
-            case "2" -> System.out.println("\n▶ [Em desenvolvimento]");
-            case "3" -> System.out.println("\n▶ [Em desenvolvimento]");
+            case "1", "2", "3" -> {
+                CidadaoUI cidadaoUI = new CidadaoUI(usuarioLogado);
+                cidadaoUI.exibirMenuCidadao();
+            }
             case "0" -> {
                 System.out.println("\nEncerrando...");
                 executando = false;
@@ -92,7 +93,10 @@ public class MenuPrincipalUI {
 
     private void processarMenuAnonimo(String opcao) {
         switch (opcao) {
-            case "1" -> System.out.println("\n▶ [Em desenvolvimento]");
+            case "1" -> {
+                CidadaoUI cidadaoUI = new CidadaoUI(usuarioLogado);
+                cidadaoUI.exibirMenuCidadao();
+            }
             case "0" -> {
                 System.out.println("\nEncerrando...");
                 executando = false;

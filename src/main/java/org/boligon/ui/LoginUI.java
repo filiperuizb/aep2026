@@ -22,6 +22,8 @@ public class LoginUI {
                 }
             } else if (opcao.equals("2")) {
                 tentarRegistro();
+            } else if (opcao.equals("3")) {
+                return entrarAnonimo();
             } else if (opcao.equals("0")) {
                 System.out.println("\nEncerrando aplicação.");
                 System.exit(0);
@@ -38,6 +40,7 @@ public class LoginUI {
         System.out.println("╚════════════════════════════════════╝");
         System.out.println("\n[1] Login");
         System.out.println("[2] Registrar");
+        System.out.println("[3] Entrar Anônimo");
         System.out.println("[0] Sair");
         System.out.print("\nOpção: ");
     }
@@ -77,6 +80,17 @@ public class LoginUI {
             System.out.println("\n✗ " + e.getMessage());
             parar();
         }
+    }Usuario entrarAnonimo() {
+        System.out.println("\n✓ Bem-vindo usuário anônimo!");
+        parar();
+        return criarUsuarioAnonimo();
+    }
+
+    private Usuario criarUsuarioAnonimo() {
+        Usuario usuario = new Usuario();
+        usuario.setNome("Anônimo");
+        usuario.setPerfil(org.boligon.enums.PerfilUsuario.ANONIMO);
+        return usuario;
     }
 
     private void parar() {
