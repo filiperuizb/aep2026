@@ -106,8 +106,8 @@ public class Solicitacao {
         this.usuarioId = usuarioId;
     }
 
-    public LocalDateTime getDataCriacao() {
-        return dataCriacao;
+    public String exibirDataCriacaoFormatada() {
+        return dataCriacao.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
     public void setDataCriacao(LocalDateTime dataCriacao) {
@@ -116,6 +116,15 @@ public class Solicitacao {
 
     public LocalDateTime getPrazoSla() {
         return prazoSla;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public String exibirPrazoSlaFormatada() {
+
+        return prazoSla.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
     public void setPrazoSla(LocalDateTime prazoSla) {
