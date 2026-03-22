@@ -3,6 +3,7 @@ package org.boligon.service;
 import org.boligon.dto.HistoricoStatusDTO;
 import org.boligon.entity.Solicitacao;
 import org.boligon.entity.Usuario;
+import org.boligon.enums.Categoria;
 import org.boligon.enums.Prioridade;
 import org.boligon.enums.StatusSolicitacao;
 import org.boligon.exception.EntidadeNaoEncontradaException;
@@ -47,6 +48,7 @@ public class SolicitacaoService {
         if(id == null) throw new ValidacaoException("É obrigatório informar o id do Usuário");
         return solicitacaoRepository.listarPorUsuarioId(id);
     }
+
 
     public List<Solicitacao> listarTodas() {
         return solicitacaoRepository.listarTodas();
@@ -122,5 +124,25 @@ public class SolicitacaoService {
                 dto,
                 statusAnterior
         );
+    }
+
+    public List<Solicitacao> listarPorPrioridade(Prioridade prioridade) {
+        if (prioridade == null) throw new ValidacaoException("A prioridade é obrigatória.");
+        return solicitacaoRepository.listarPorPrioridade(prioridade);
+    }
+
+    public List<Solicitacao> listarPorStatus(StatusSolicitacao status) {
+        if (status == null) throw new ValidacaoException("O status é obrigatório.");
+        return solicitacaoRepository.listarPorStatus(status);
+    }
+
+    public List<Solicitacao> listarPorBairro(String bairro) {
+        if (bairro == null || bairro.trim().isEmpty()) throw new ValidacaoException("O bairro é obrigatório.");
+        return solicitacaoRepository.listarPorBairro(bairro.trim());
+    }
+
+    public List<Solicitacao> listarPorCategoria(Categoria categoria) {
+        if(categoria==null) throw new ValidacaoException("A categoria é obrigatória.");
+        return solicitacaoRepository.listarPorCategoria(categoria);
     }
 }

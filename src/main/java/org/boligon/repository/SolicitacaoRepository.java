@@ -190,6 +190,37 @@ public class SolicitacaoRepository {
         }
     }
 
+    public List<Solicitacao> listarPorCategoria(Categoria categoria) {
+
+        String sql = """
+            SELECT id, protocolo, categoria, descricao, localizacao, bairro,
+                   prioridade, status, anonima, usuario_id, data_criacao,
+                   prazo_sla, justificativa_atraso
+            FROM solicitacoes
+            WHERE categoria = ?
+            ORDER BY data_criacao DESC
+            """;
+
+        List<Solicitacao> solicitacoes = new ArrayList<>();
+
+        try (Connection connection = ConexaoBanco.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, categoria.name());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    solicitacoes.add(mapearSolicitacao(resultSet));
+                }
+            }
+
+            return solicitacoes;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar solicitações por categoria.", e);
+        }
+    }
+
     public List<Solicitacao> listarPorPrioridade(Prioridade prioridade) {
         String sql = """
                 SELECT id, protocolo, categoria, descricao, localizacao, bairro,
