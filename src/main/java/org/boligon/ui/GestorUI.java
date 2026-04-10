@@ -15,13 +15,14 @@ import java.util.Scanner;
 
 public class GestorUI {
 
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
     private final SolicitacaoService solicitacaoService = new SolicitacaoService();
     private final HistoricoStatusService historicoStatusService = new HistoricoStatusService();
     private final Usuario usuarioLogado;
 
-    public GestorUI(Usuario usuarioLogado) {
+    public GestorUI(Usuario usuarioLogado, Scanner scanner) {
         this.usuarioLogado = usuarioLogado;
+        this.scanner = scanner;
     }
 
     public void exibirMenuGestor() {

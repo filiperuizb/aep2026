@@ -12,51 +12,30 @@ import java.util.Scanner;
 
 public class CidadaoUI {
 
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
     private final SolicitacaoService solicitacaoService = new SolicitacaoService();
     private final Usuario usuarioLogado;
 
-    public CidadaoUI(Usuario usuarioLogado) {
+    public CidadaoUI(Usuario usuarioLogado, Scanner scanner) {
         this.usuarioLogado = usuarioLogado;
+        this.scanner = scanner;
     }
 
-    public void exibirMenuCidadao() {
-        boolean executando = true;
-        while (executando) {
-            System.out.println("\n╔═══════════════════════════════════════╗");
-            System.out.println("║       MENU - CIDADÃO/ANÔNIMO          ║");
-            System.out.println("╚═══════════════════════════════════════╝");
-            System.out.println("\n[1] Enviar Nova Solicitação");
-            System.out.println("[2] Acompanhar Solicitação");
-            System.out.println("[3] Minhas Solicitações");
-            System.out.println("[0] Voltar");
-            System.out.print("\nOpção: ");
+    public void executarNovaSolicitacao() {
+        criarSolicitacao();
+    }
 
-            String opcao = scanner.nextLine().trim();
+    public void executarAcompanhamento() {
+        new AcompanhamentoUI(scanner).executar();
+    }
 
-            switch (opcao) {
-                case "1":
-                    criarSolicitacao();
-                    break;
-                case "2":
-                    new AcompanhamentoUI(scanner).executar();
-                    break;
-                case "3":
-                    if (!usuarioLogado.getPerfil().equals(PerfilUsuario.ANONIMO)) {
-                        minhasSolicitacoes();
-                    } else {
-                        System.out.println("\n✗ Usuários anônimos não podem visualizar histórico.");
-                        parar();
-                    }
-                    break;
-                case "0":
-                    executando = false;
-                    break;
-                default:
-                    System.out.println("\n✗ Opção inválida!");
-                    parar();
-            }
+    public void executarMinhasSolicitacoes() {
+        if (usuarioLogado.getPerfil().equals(PerfilUsuario.ANONIMO)) {
+            System.out.println("\n✗ Usuários anônimos não podem visualizar histórico.");
+            parar();
+            return;
         }
+        minhasSolicitacoes();
     }
 
     private void criarSolicitacao() {

@@ -37,9 +37,7 @@ public class MenuPrincipalUI {
                 System.out.println("[0] Sair");
                 break;
             case GESTOR:
-                System.out.println("\n[1] Listar Solicitações");
-                System.out.println("[2] Atualizar Status");
-                System.out.println("[3] Filtrar por Prioridade");
+                System.out.println("\n[1] Painel do gestor");
                 System.out.println("[0] Sair");
                 break;
             case ANONIMO:
@@ -75,11 +73,11 @@ public class MenuPrincipalUI {
     }
 
     private void processarMenuCidadao(String opcao) {
+        CidadaoUI cidadaoUI = new CidadaoUI(usuarioLogado, scanner);
         switch (opcao) {
-            case "1", "2", "3" -> {
-                CidadaoUI cidadaoUI = new CidadaoUI(usuarioLogado);
-                cidadaoUI.exibirMenuCidadao();
-            }
+            case "1" -> cidadaoUI.executarNovaSolicitacao();
+            case "2" -> cidadaoUI.executarAcompanhamento();
+            case "3" -> cidadaoUI.executarMinhasSolicitacoes();
             case "0" -> {
                 System.out.println("\nEncerrando...");
                 executando = false;
@@ -90,8 +88,8 @@ public class MenuPrincipalUI {
 
     private void processarMenuGestor(String opcao) {
         switch (opcao) {
-            case "1", "2", "3" -> {
-                GestorUI gestorUI = new GestorUI(usuarioLogado);
+            case "1" -> {
+                GestorUI gestorUI = new GestorUI(usuarioLogado, scanner);
                 gestorUI.exibirMenuGestor();
             }
             case "0" -> {
@@ -104,10 +102,7 @@ public class MenuPrincipalUI {
 
     private void processarMenuAnonimo(String opcao) {
         switch (opcao) {
-            case "1" -> {
-                CidadaoUI cidadaoUI = new CidadaoUI(usuarioLogado);
-                cidadaoUI.exibirMenuCidadao();
-            }
+            case "1" -> new CidadaoUI(usuarioLogado, scanner).executarNovaSolicitacao();
             case "2" -> new AcompanhamentoUI(scanner).executar();
             case "0" -> {
                 System.out.println("\nEncerrando...");
