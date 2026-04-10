@@ -2,7 +2,7 @@
 
 Sistema em **Java**, sem framework web, para registro e acompanhamento de solicitações à prefeitura (iluminação, buracos, zeladoria, saúde, etc.). Foi pensado no contexto da govtech fictícia **ObservaAção**, com foco em **transparência**, **rastreio por protocolo** e **tratamento organizado** das demandas pelo gestor.
 
-A motivação do problema liga-se à **ODS 16** (paz, justiça e instituições eficazes): reduzir a opacidade no atendimento, dar previsibilidade de prazos (SLA) e registrar movimentações com responsável — em especial para quem depende do serviço público e não tem “facilitador” informal.
+A motivação do problema liga-se à **ODS 16** (paz, justiça e instituições eficazes): reduzir a opacidade no atendimento, dar previsibilidade de prazos (SLA) e registrar movimentações com responsável em especial para quem depende do serviço público e não tem “facilitador” informal.
 
 ---
 
@@ -65,14 +65,6 @@ A camada de serviço concentra validações, geração de protocolo, cálculo de
 ## Dados locais
 
 Os arquivos do H2 ficam em `./data/` (por exemplo `observacao_db.mv.db`). Não versionar esse diretório no Git se a equipe quiser evitar conflitos de banco entre máquinas; cada clone pode gerar sua própria base ao rodar o `Main`.
-
----
-
-## Autores e entregáveis da etapa
-
-Trabalho acadêmico — **1º bimestre**. Além deste repositório, a entrega prevê documentação de **IHC (perfis e personas)**, **relatório de Clean Code (três funções)** e **vídeo** de até cinco minutos, conforme critério da disciplina.
-
-O texto base para o relatório de Clean Code está em [`RELATORIO_CLEAN_CODE_ETAPA1.md`](RELATORIO_CLEAN_CODE_ETAPA1.md) (pode ser copiado para Word e ajustado).
 
 ---
 
