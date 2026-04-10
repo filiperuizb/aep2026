@@ -80,7 +80,9 @@ public class LoginUI {
             System.out.println("\n✗ " + e.getMessage());
             parar();
         }
-    }Usuario entrarAnonimo() {
+    }
+
+    private Usuario entrarAnonimo() {
         System.out.println("\n✓ Bem-vindo usuário anônimo!");
         parar();
         return criarUsuarioAnonimo();

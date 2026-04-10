@@ -5,7 +5,6 @@ import org.boligon.enums.StatusSolicitacao;
 import org.boligon.configbanco.ConexaoBanco;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,10 +50,12 @@ public class HistoricoStatusRepository {
     public List<HistoricoStatus> listarPorSolicitacaoId(Long solicitacaoId) {
 
         String sql = """
-                SELECT *
-                FROM historico_status
-                WHERE solicitacao_id = ?
-                ORDER BY data_movimentacao DESC
+                SELECT h.id, h.solicitacao_id, h.status_anterior, h.status_novo, h.comentario,
+                       h.responsavel_id, h.data_movimentacao, u.nome AS responsavel_nome
+                FROM historico_status h
+                INNER JOIN usuarios u ON u.id = h.responsavel_id
+                WHERE h.solicitacao_id = ?
+                ORDER BY h.data_movimentacao DESC
                 """;
 
         List<HistoricoStatus> lista = new ArrayList<>();
@@ -92,6 +93,7 @@ public class HistoricoStatusRepository {
         historico.setStatusNovo(StatusSolicitacao.valueOf(rs.getString("status_novo")));
         historico.setComentario(rs.getString("comentario"));
         historico.setResponsavelId(rs.getLong("responsavel_id"));
+        historico.setNomeResponsavel(rs.getString("responsavel_nome"));
 
         Timestamp timestamp = rs.getTimestamp("data_movimentacao");
         if (timestamp != null) {

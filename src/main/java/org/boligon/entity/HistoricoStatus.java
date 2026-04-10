@@ -14,6 +14,7 @@ public class HistoricoStatus {
     private String comentario;
     private Long responsavelId;
     private LocalDateTime dataMovimentacao;
+    private String nomeResponsavel;
 
     public HistoricoStatus() {
     }
@@ -76,5 +77,13 @@ public class HistoricoStatus {
 
     public String exibirDataMovimentacaoFormatada() {
         return this.dataMovimentacao.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    public String getNomeResponsavel() {
+        return nomeResponsavel;
+    }
+
+    public void setNomeResponsavel(String nomeResponsavel) {
+        this.nomeResponsavel = nomeResponsavel;
     }
 }

@@ -3,8 +3,9 @@ package org.boligon.ui;
 import org.boligon.entity.Solicitacao;
 import org.boligon.entity.Usuario;
 import org.boligon.enums.Categoria;
+import org.boligon.enums.PerfilUsuario;
 import org.boligon.enums.Prioridade;
-import org.boligon.service.HistoricoStatusService;
+import org.boligon.enums.StatusSolicitacao;
 import org.boligon.service.SolicitacaoService;
 
 import java.util.Scanner;
@@ -13,7 +14,6 @@ public class CidadaoUI {
 
     private final Scanner scanner = new Scanner(System.in);
     private final SolicitacaoService solicitacaoService = new SolicitacaoService();
-    private final HistoricoStatusService historicoStatusService = new HistoricoStatusService();
     private final Usuario usuarioLogado;
 
     public CidadaoUI(Usuario usuarioLogado) {
@@ -39,10 +39,10 @@ public class CidadaoUI {
                     criarSolicitacao();
                     break;
                 case "2":
-                    acompanharSolicitacao();
+                    new AcompanhamentoUI(scanner).executar();
                     break;
                 case "3":
-                    if (!usuarioLogado.getPerfil().equals(org.boligon.enums.PerfilUsuario.ANONIMO)) {
+                    if (!usuarioLogado.getPerfil().equals(PerfilUsuario.ANONIMO)) {
                         minhasSolicitacoes();
                     } else {
                         System.out.println("\n✗ Usuários anônimos não podem visualizar histórico.");
@@ -73,6 +73,12 @@ public class CidadaoUI {
             String descricao = scanner.nextLine().trim();
             novaSolicitacao.setDescricao(descricao);
 
+            System.out.print("Caminho ou nome do anexo (opcional, Enter para pular): ");
+            String anexo = scanner.nextLine().trim();
+            if (!anexo.isEmpty()) {
+                novaSolicitacao.setAnexo(anexo);
+            }
+
             System.out.print("Localização (rua e número): ");
             String localizacao = scanner.nextLine().trim();
             novaSolicitacao.setLocalizacao(localizacao);
@@ -83,7 +89,14 @@ public class CidadaoUI {
 
             novaSolicitacao.setPrioridade(selecionarPrioridade());
 
-            boolean isAnonimo = usuarioLogado.getPerfil().equals(org.boligon.enums.PerfilUsuario.ANONIMO);
+            boolean isAnonimo;
+            if (usuarioLogado.getPerfil().equals(PerfilUsuario.ANONIMO)) {
+                isAnonimo = true;
+            } else {
+                System.out.print("\nEnviar de forma anônima? [s/N]: ");
+                String resp = scanner.nextLine().trim().toLowerCase();
+                isAnonimo = resp.equals("s") || resp.equals("sim");
+            }
             novaSolicitacao.setAnonima(isAnonimo);
 
             solicitacaoService.criarSolicitacao(novaSolicitacao, usuarioLogado);
@@ -129,7 +142,9 @@ public class CidadaoUI {
             System.out.println("\nSelecione a prioridade:");
             Prioridade[] prioridades = Prioridade.values();
             for (int i = 0; i < prioridades.length; i++) {
-                System.out.println("[" + (i + 1) + "] " + prioridades[i] + " (" + prioridades[i].getDiasSla() + " dias)");
+                System.out.println("[" + (i + 1) + "] " + prioridades[i]
+                        + " (" + prioridades[i].getDiasSla() + " dias) — "
+                        + prioridades[i].getImpactoSocial());
             }
             System.out.print("\nOpção: ");
 
@@ -146,34 +161,6 @@ public class CidadaoUI {
         }
     }
 
-    private void acompanharSolicitacao() {
-        System.out.println("\n--- ACOMPANHAR SOLICITAÇÃO ---");
-        System.out.print("Digite o protocolo: ");
-        String protocolo = scanner.nextLine().trim();
-
-        try {
-            Solicitacao solicitacao = solicitacaoService.buscarPorProtocolo(protocolo);
-            exibirDetalhes(solicitacao);
-            
-            System.out.println("\n--- HISTÓRICO DE ALTERAÇÕES ---");
-            var historico = historicoStatusService.listarPorSolicitacaoId(solicitacao.getId());
-            
-            if (historico.isEmpty()) {
-                System.out.println("Nenhuma alteração registrada.");
-            } else {
-                for (var h : historico) {
-                    System.out.println("\n├─ Data: " + h.getDataMovimentacao());
-                    System.out.println("├─ Status: " + h.getStatusAnterior() + " → " + h.getStatusNovo());
-                    System.out.println("└─ Comentário: " + h.getComentario());
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("\n✗ " + e.getMessage());
-        }
-
-        parar();
-    }
-
     private void minhasSolicitacoes() {
         System.out.println("\n--- MINHAS SOLICITAÇÕES ---");
 
@@ -188,6 +175,10 @@ public class CidadaoUI {
                     System.out.println("├─ Categoria: " + s.getCategoria().getValor());
                     System.out.println("├─ Bairro: " + s.getBairro());
                     System.out.println("├─ Status: " + s.getStatus());
+                    System.out.println("├─ Prazo SLA: " + s.exibirPrazoSlaFormatada());
+                    if (s.isForaDoPrazoSla() && s.getStatus() != StatusSolicitacao.ENCERRADO) {
+                        System.out.println("├─ Situação: fora do prazo");
+                    }
                     System.out.println("└─ Data: " + s.exibirDataCriacaoFormatada());
                 }
             }
@@ -198,28 +189,8 @@ public class CidadaoUI {
         parar();
     }
 
-    private void exibirDetalhes(Solicitacao solicitacao) {
-        System.out.println("\n╔═══════════════════════════════════════╗");
-        System.out.println("║       DETALHES DA SOLICITAÇÃO         ║");
-        System.out.println("╚═══════════════════════════════════════╝");
-        System.out.println("\nProtocolo: " + solicitacao.getProtocolo());
-        System.out.println("Categoria: " + solicitacao.getCategoria().getValor());
-        System.out.println("Descrição: " + solicitacao.getDescricao());
-        System.out.println("Localização: " + solicitacao.getLocalizacao());
-        System.out.println("Bairro: " + solicitacao.getBairro());
-        System.out.println("Prioridade: " + solicitacao.getPrioridade());
-        System.out.println("Status: " + solicitacao.getStatus());
-        System.out.println("Data de Criação: " + solicitacao.exibirDataCriacaoFormatada());
-        System.out.println("Prazo SLA: " + solicitacao.exibirPrazoSlaFormatada());
-
-        if (solicitacao.isAnonima()) {
-            System.out.println("Autor: Anônimo");
-        }
-    }
-
     private void parar() {
         System.out.print("\nPressione ENTER para continuar...");
         scanner.nextLine();
     }
 }
-

@@ -5,7 +5,8 @@ public enum Categoria {
     BURACO("Buraco"),
     ZELADORIA("Zeladoria/Limpeza"),
     PODA("Poda de Árvore"),
-    SAUDE("Saúde");
+    SAUDE("Saúde"),
+    SEGURANCA_ESCOLAR("Segurança escolar");
 
     private final String valor;
 

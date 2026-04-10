@@ -18,6 +18,7 @@ public class SolicitacaoRepository {
                     protocolo,
                     categoria,
                     descricao,
+                    anexo,
                     localizacao,
                     bairro,
                     prioridade,
@@ -27,7 +28,7 @@ public class SolicitacaoRepository {
                     data_criacao,
                     prazo_sla,
                     justificativa_atraso
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection connection = ConexaoBanco.getConnection();
@@ -36,21 +37,26 @@ public class SolicitacaoRepository {
             statement.setString(1, solicitacao.getProtocolo());
             statement.setString(2, solicitacao.getCategoria().name());
             statement.setString(3, solicitacao.getDescricao());
-            statement.setString(4, solicitacao.getLocalizacao());
-            statement.setString(5, solicitacao.getBairro());
-            statement.setString(6, solicitacao.getPrioridade().name());
-            statement.setString(7, solicitacao.getStatus().name());
-            statement.setBoolean(8, solicitacao.isAnonima());
+            if (solicitacao.getAnexo() != null && !solicitacao.getAnexo().isBlank()) {
+                statement.setString(4, solicitacao.getAnexo().trim());
+            } else {
+                statement.setNull(4, Types.VARCHAR);
+            }
+            statement.setString(5, solicitacao.getLocalizacao());
+            statement.setString(6, solicitacao.getBairro());
+            statement.setString(7, solicitacao.getPrioridade().name());
+            statement.setString(8, solicitacao.getStatus().name());
+            statement.setBoolean(9, solicitacao.isAnonima());
 
             if (solicitacao.getUsuarioId() != null) {
-                statement.setLong(9, solicitacao.getUsuarioId());
+                statement.setLong(10, solicitacao.getUsuarioId());
             } else {
-                statement.setNull(9, Types.BIGINT);
+                statement.setNull(10, Types.BIGINT);
             }
 
-            statement.setTimestamp(10, Timestamp.valueOf(solicitacao.getDataCriacao()));
-            statement.setTimestamp(11, Timestamp.valueOf(solicitacao.getPrazoSla()));
-            statement.setString(12, solicitacao.getJustificativaAtraso());
+            statement.setTimestamp(11, Timestamp.valueOf(solicitacao.getDataCriacao()));
+            statement.setTimestamp(12, Timestamp.valueOf(solicitacao.getPrazoSla()));
+            statement.setString(13, solicitacao.getJustificativaAtraso());
 
             statement.executeUpdate();
 
@@ -61,7 +67,7 @@ public class SolicitacaoRepository {
 
     public Solicitacao buscarPorProtocolo(String protocolo) {
         String sql = """
-                SELECT id, protocolo, categoria, descricao, localizacao, bairro,
+                SELECT id, protocolo, categoria, descricao, anexo, localizacao, bairro,
                        prioridade, status, anonima, usuario_id, data_criacao,
                        prazo_sla, justificativa_atraso
                 FROM solicitacoes
@@ -88,7 +94,7 @@ public class SolicitacaoRepository {
 
     public Solicitacao buscarPorId(Long id) {
         String sql = """
-                SELECT id, protocolo, categoria, descricao, localizacao, bairro,
+                SELECT id, protocolo, categoria, descricao, anexo, localizacao, bairro,
                        prioridade, status, anonima, usuario_id, data_criacao,
                        prazo_sla, justificativa_atraso
                 FROM solicitacoes
@@ -115,7 +121,7 @@ public class SolicitacaoRepository {
 
     public List<Solicitacao> listarPorUsuarioId(Long usuarioId) {
         String sql = """
-                SELECT id, protocolo, categoria, descricao, localizacao, bairro,
+                SELECT id, protocolo, categoria, descricao, anexo, localizacao, bairro,
                        prioridade, status, anonima, usuario_id, data_criacao,
                        prazo_sla, justificativa_atraso
                 FROM solicitacoes
@@ -145,7 +151,7 @@ public class SolicitacaoRepository {
 
     public List<Solicitacao> listarTodas() {
         String sql = """
-                SELECT id, protocolo, categoria, descricao, localizacao, bairro,
+                SELECT id, protocolo, categoria, descricao, anexo, localizacao, bairro,
                        prioridade, status, anonima, usuario_id, data_criacao,
                        prazo_sla, justificativa_atraso
                 FROM solicitacoes
@@ -193,7 +199,7 @@ public class SolicitacaoRepository {
     public List<Solicitacao> listarPorCategoria(Categoria categoria) {
 
         String sql = """
-            SELECT id, protocolo, categoria, descricao, localizacao, bairro,
+            SELECT id, protocolo, categoria, descricao, anexo, localizacao, bairro,
                    prioridade, status, anonima, usuario_id, data_criacao,
                    prazo_sla, justificativa_atraso
             FROM solicitacoes
@@ -223,7 +229,7 @@ public class SolicitacaoRepository {
 
     public List<Solicitacao> listarPorPrioridade(Prioridade prioridade) {
         String sql = """
-                SELECT id, protocolo, categoria, descricao, localizacao, bairro,
+                SELECT id, protocolo, categoria, descricao, anexo, localizacao, bairro,
                        prioridade, status, anonima, usuario_id, data_criacao,
                        prazo_sla, justificativa_atraso
                 FROM solicitacoes
@@ -253,7 +259,7 @@ public class SolicitacaoRepository {
 
     public List<Solicitacao> listarPorBairro(String bairro) {
         String sql = """
-                SELECT id, protocolo, categoria, descricao, localizacao, bairro,
+                SELECT id, protocolo, categoria, descricao, anexo, localizacao, bairro,
                        prioridade, status, anonima, usuario_id, data_criacao,
                        prazo_sla, justificativa_atraso
                 FROM solicitacoes
@@ -283,7 +289,7 @@ public class SolicitacaoRepository {
 
     public List<Solicitacao> listarPorStatus(StatusSolicitacao status) {
         String sql = """
-                SELECT id, protocolo, categoria, descricao, localizacao, bairro,
+                SELECT id, protocolo, categoria, descricao, anexo, localizacao, bairro,
                        prioridade, status, anonima, usuario_id, data_criacao,
                        prazo_sla, justificativa_atraso
                 FROM solicitacoes
@@ -318,6 +324,7 @@ public class SolicitacaoRepository {
         solicitacao.setProtocolo(resultSet.getString("protocolo"));
         solicitacao.setCategoria(Categoria.valueOf(resultSet.getString("categoria")));
         solicitacao.setDescricao(resultSet.getString("descricao"));
+        solicitacao.setAnexo(resultSet.getString("anexo"));
         solicitacao.setLocalizacao(resultSet.getString("localizacao"));
         solicitacao.setBairro(resultSet.getString("bairro"));
         solicitacao.setPrioridade(Prioridade.valueOf(resultSet.getString("prioridade")));

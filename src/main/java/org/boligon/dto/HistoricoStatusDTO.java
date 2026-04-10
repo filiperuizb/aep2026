@@ -8,6 +8,7 @@ public class HistoricoStatusDTO {
     private StatusSolicitacao statusNovo;
     private String comentario;
     private Long responsavelId;
+    private String justificativaAtraso;
 
     public Long getSolicitacaoId() {
         return solicitacaoId;
@@ -39,5 +40,13 @@ public class HistoricoStatusDTO {
 
     public void setResponsavelId(Long responsavelId) {
         this.responsavelId = responsavelId;
+    }
+
+    public String getJustificativaAtraso() {
+        return justificativaAtraso;
+    }
+
+    public void setJustificativaAtraso(String justificativaAtraso) {
+        this.justificativaAtraso = justificativaAtraso;
     }
 }

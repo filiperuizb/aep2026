@@ -14,6 +14,8 @@ public class InicioBanco {
             criarTabelaSolicitacoes(statement);
             criarTabelaHistoricoStatus(statement);
             criarTabelaComentarios(statement);
+            criarTabelaAuditoria(statement);
+            garantirColunaAnexoSolicitacoes(statement);
             inserirUsuarioGestorPadrao(statement);
 
         } catch (SQLException e) {
@@ -98,6 +100,26 @@ public class InicioBanco {
             """;
 
         statement.execute(sql);
+    }
+
+    private void criarTabelaAuditoria(Statement statement) throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS auditoria (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id BIGINT,
+                tipo_acao VARCHAR(80) NOT NULL,
+                detalhe VARCHAR(500) NOT NULL,
+                data_registro TIMESTAMP NOT NULL,
+                CONSTRAINT fk_auditoria_usuario
+                    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+            );
+            """;
+
+        statement.execute(sql);
+    }
+
+    private void garantirColunaAnexoSolicitacoes(Statement statement) throws SQLException {
+        statement.execute("ALTER TABLE solicitacoes ADD COLUMN IF NOT EXISTS anexo VARCHAR(255)");
     }
 
     private void inserirUsuarioGestorPadrao(Statement statement) throws SQLException {

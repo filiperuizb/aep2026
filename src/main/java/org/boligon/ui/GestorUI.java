@@ -1,5 +1,6 @@
 package org.boligon.ui;
 
+import org.boligon.dto.FiltroSolicitacaoDTO;
 import org.boligon.dto.HistoricoStatusDTO;
 import org.boligon.entity.Solicitacao;
 import org.boligon.entity.Usuario;
@@ -9,6 +10,7 @@ import org.boligon.enums.StatusSolicitacao;
 import org.boligon.service.HistoricoStatusService;
 import org.boligon.service.SolicitacaoService;
 
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class GestorUI {
@@ -28,13 +30,14 @@ public class GestorUI {
             System.out.println("\n╔═══════════════════════════════════════╗");
             System.out.println("║       MENU - GESTOR                   ║");
             System.out.println("╚═══════════════════════════════════════╝");
-            System.out.println("\n[1] Listar Todas as Solicitações");
+            System.out.println("\n[1] Listar fila de atendimento (por prioridade)");
             System.out.println("[2] Filtrar por Prioridade");
             System.out.println("[3] Filtrar por Status");
             System.out.println("[4] Filtrar por Bairro");
             System.out.println("[5] Filtrar por Categoria");
-            System.out.println("[6] Alterar Status da Solicitação");
-            System.out.println("[7] Visualizar Histórico");
+            System.out.println("[6] Filtro combinado");
+            System.out.println("[7] Alterar Status da Solicitação");
+            System.out.println("[8] Visualizar Histórico");
             System.out.println("[0] Voltar");
             System.out.print("\nOpção: ");
 
@@ -57,9 +60,12 @@ public class GestorUI {
                     filtrarPorCategoria();
                     break;
                 case "6":
-                    alterarStatusSolicitacao();
+                    filtroCombinado();
                     break;
                 case "7":
+                    alterarStatusSolicitacao();
+                    break;
+                case "8":
                     visualizarHistorico();
                     break;
                 case "0":
@@ -74,11 +80,11 @@ public class GestorUI {
 
     private void listarTodasSolicitacoes() {
         System.out.println("\n╔═══════════════════════════════════════╗");
-        System.out.println("║    TODAS AS SOLICITAÇÕES              ║");
+        System.out.println("║    FILA DE ATENDIMENTO                ║");
         System.out.println("╚═══════════════════════════════════════╝");
 
         try {
-            var solicitacoes = solicitacaoService.listarTodas();
+            var solicitacoes = solicitacaoService.obterFilaDeAtendimento().getSolicitacoesOrdenadas();
 
             if (solicitacoes.isEmpty()) {
                 System.out.println("\nNenhuma solicitação encontrada.");
@@ -226,6 +232,75 @@ public class GestorUI {
         }
     }
 
+    private void filtroCombinado() {
+        System.out.println("\n╔═══════════════════════════════════════╗");
+        System.out.println("║   FILTRO COMBINADO                    ║");
+        System.out.println("╚═══════════════════════════════════════╝");
+        System.out.println("\nDeixe em branco ou use 0 para ignorar cada critério.");
+
+        try {
+            FiltroSolicitacaoDTO filtro = new FiltroSolicitacaoDTO();
+
+            System.out.print("\nBairro (trecho do nome, vazio ignora): ");
+            String bairro = scanner.nextLine().trim();
+            if (!bairro.isEmpty()) {
+                filtro.setBairro(bairro);
+            }
+
+            Prioridade[] prioridades = Prioridade.values();
+            System.out.println("\nPrioridade [0] ignorar");
+            for (int i = 0; i < prioridades.length; i++) {
+                System.out.println("[" + (i + 1) + "] " + prioridades[i]);
+            }
+            System.out.print("Opção: ");
+            String opP = scanner.nextLine().trim();
+            if (!opP.isEmpty() && !opP.equals("0")) {
+                int ip = Integer.parseInt(opP);
+                if (ip >= 1 && ip <= prioridades.length) {
+                    filtro.setPrioridade(prioridades[ip - 1]);
+                }
+            }
+
+            Categoria[] categorias = Categoria.values();
+            System.out.println("\nCategoria [0] ignorar");
+            for (int i = 0; i < categorias.length; i++) {
+                System.out.println("[" + (i + 1) + "] " + categorias[i].getValor());
+            }
+            System.out.print("Opção: ");
+            String opC = scanner.nextLine().trim();
+            if (!opC.isEmpty() && !opC.equals("0")) {
+                int ic = Integer.parseInt(opC);
+                if (ic >= 1 && ic <= categorias.length) {
+                    filtro.setCategoria(categorias[ic - 1]);
+                }
+            }
+
+            StatusSolicitacao[] statuses = StatusSolicitacao.values();
+            System.out.println("\nStatus [0] ignorar");
+            for (int i = 0; i < statuses.length; i++) {
+                System.out.println("[" + (i + 1) + "] " + statuses[i]);
+            }
+            System.out.print("Opção: ");
+            String opS = scanner.nextLine().trim();
+            if (!opS.isEmpty() && !opS.equals("0")) {
+                int is = Integer.parseInt(opS);
+                if (is >= 1 && is <= statuses.length) {
+                    filtro.setStatus(statuses[is - 1]);
+                }
+            }
+
+            var solicitacoes = solicitacaoService.filtrar(filtro);
+            exibirListaFiltered(solicitacoes, "Filtro combinado");
+
+        } catch (NumberFormatException e) {
+            System.out.println("\n✗ Por favor, digite um número válido!");
+            parar();
+        } catch (Exception e) {
+            System.out.println("\n✗ Erro ao filtrar: " + e.getMessage());
+            parar();
+        }
+    }
+
     private void exibirListaFiltered(java.util.List<Solicitacao> solicitacoes, String titulo) {
         System.out.println("\n╔═══════════════════════════════════════╗");
         System.out.println("║   RESULTADO DA BUSCA                 ║");
@@ -249,6 +324,16 @@ public class GestorUI {
         parar();
     }
 
+    private StatusSolicitacao obterProximoStatusNaFila(StatusSolicitacao atual) {
+        return switch (atual) {
+            case ABERTO -> StatusSolicitacao.TRIAGEM;
+            case TRIAGEM -> StatusSolicitacao.EM_EXECUCAO;
+            case EM_EXECUCAO -> StatusSolicitacao.RESOLVIDO;
+            case RESOLVIDO -> StatusSolicitacao.ENCERRADO;
+            case ENCERRADO -> null;
+        };
+    }
+
     private void alterarStatusSolicitacao() {
         System.out.println("\n╔═══════════════════════════════════════╗");
         System.out.println("║      ALTERAR STATUS DE SOLICITAÇÃO    ║");
@@ -260,23 +345,24 @@ public class GestorUI {
 
             Solicitacao solicitacao = solicitacaoService.buscarPorProtocolo(protocolo);
 
-            exibirDetalhes(solicitacao);
+            AcompanhamentoUI.imprimirDetalhes(solicitacao);
 
-            System.out.println("\nSelecione o novo status:");
-            StatusSolicitacao[] statusDispon = StatusSolicitacao.values();
-            for (int i = 0; i < statusDispon.length; i++) {
-                System.out.println("[" + (i + 1) + "] " + statusDispon[i]);
-            }
-            System.out.print("\nOpção: ");
+            StatusSolicitacao statusAnterior = solicitacao.getStatus();
+            StatusSolicitacao novoStatus = obterProximoStatusNaFila(statusAnterior);
 
-            int opcaoStatus = Integer.parseInt(scanner.nextLine().trim());
-            if (opcaoStatus < 1 || opcaoStatus > statusDispon.length) {
-                System.out.println("\n✗ Opção inválida!");
+            if (novoStatus == null) {
+                System.out.println("\n✗ Esta solicitação já está encerrada; não há próximo status.");
                 parar();
                 return;
             }
 
-            StatusSolicitacao novoStatus = statusDispon[opcaoStatus - 1];
+            System.out.println("\nPróximo status na fila: " + novoStatus);
+            System.out.print("Confirmar alteração? [S/n]: ");
+            String conf = scanner.nextLine().trim().toLowerCase();
+            if (conf.equals("n") || conf.equals("nao")) {
+                parar();
+                return;
+            }
 
             System.out.print("\nComentário (obrigatório): ");
             String comentario = scanner.nextLine().trim();
@@ -293,12 +379,25 @@ public class GestorUI {
             dto.setComentario(comentario);
             dto.setResponsavelId(usuarioLogado.getId());
 
+            if (LocalDateTime.now().isAfter(solicitacao.getPrazoSla())) {
+                System.out.print("\nJustificativa do atraso em relação ao SLA (obrigatória): ");
+                String just = scanner.nextLine().trim();
+                if (just.isEmpty()) {
+                    System.out.println("\n✗ Justificativa de atraso é obrigatória quando o prazo SLA já passou.");
+                    parar();
+                    return;
+                }
+                dto.setJustificativaAtraso(just);
+            }
+
             solicitacaoService.atualizarStatus(dto);
 
+            Solicitacao atualizada = solicitacaoService.buscarPorProtocolo(protocolo);
+
             System.out.println("\n✓ Status atualizado com sucesso!");
-            System.out.println("├─ Protocolo: " + solicitacao.getProtocolo());
-            System.out.println("├─ Status Anterior: " + solicitacao.getStatus());
-            System.out.println("└─ Novo Status: " + novoStatus);
+            System.out.println("├─ Protocolo: " + atualizada.getProtocolo());
+            System.out.println("├─ Status Anterior: " + statusAnterior);
+            System.out.println("└─ Novo Status: " + atualizada.getStatus());
 
             parar();
 
@@ -321,15 +420,7 @@ public class GestorUI {
             System.out.println("║       HISTÓRICO DE ALTERAÇÕES         ║");
             System.out.println("╚═══════════════════════════════════════╝");
 
-            if (historico.isEmpty()) {
-                System.out.println("\nNenhuma alteração registrada.");
-            } else {
-                for (var h : historico) {
-                    System.out.println("\n├─ Data: " + h.getDataMovimentacao());
-                    System.out.println("├─ Status: " + h.getStatusAnterior() + " → " + h.getStatusNovo());
-                    System.out.println("└─ Comentário: " + h.getComentario());
-                }
-            }
+            AcompanhamentoUI.imprimirHistorico(historico);
         } catch (Exception e) {
             System.out.println("\n✗ " + e.getMessage());
         }
@@ -337,24 +428,8 @@ public class GestorUI {
         parar();
     }
 
-    private void exibirDetalhes(Solicitacao solicitacao) {
-        System.out.println("\n╔═══════════════════════════════════════╗");
-        System.out.println("║       DETALHES DA SOLICITAÇÃO         ║");
-        System.out.println("╚═══════════════════════════════════════╝");
-        System.out.println("\nProtocolo: " + solicitacao.getProtocolo());
-        System.out.println("Categoria: " + solicitacao.getCategoria().getValor());
-        System.out.println("Descrição: " + solicitacao.getDescricao());
-        System.out.println("Localização: " + solicitacao.getLocalizacao());
-        System.out.println("Bairro: " + solicitacao.getBairro());
-        System.out.println("Prioridade: " + solicitacao.getPrioridade());
-        System.out.println("Status Atual: " + solicitacao.getStatus());
-        System.out.println("Data de Criação: " + solicitacao.getDataCriacao());
-        System.out.println("Prazo SLA: " + solicitacao.getPrazoSla());
-    }
-
     private void parar() {
         System.out.print("\nPressione ENTER para continuar...");
         scanner.nextLine();
     }
 }
-

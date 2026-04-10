@@ -44,6 +44,7 @@ public class MenuPrincipalUI {
                 break;
             case ANONIMO:
                 System.out.println("\n[1] Enviar Solicitação Anônima");
+                System.out.println("[2] Acompanhar por protocolo");
                 System.out.println("[0] Sair");
                 break;
         }
@@ -107,6 +108,7 @@ public class MenuPrincipalUI {
                 CidadaoUI cidadaoUI = new CidadaoUI(usuarioLogado);
                 cidadaoUI.exibirMenuCidadao();
             }
+            case "2" -> new AcompanhamentoUI(scanner).executar();
             case "0" -> {
                 System.out.println("\nEncerrando...");
                 executando = false;

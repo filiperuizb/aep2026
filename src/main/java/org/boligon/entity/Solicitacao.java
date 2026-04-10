@@ -13,6 +13,7 @@ public class Solicitacao {
     private String protocolo;
     private Categoria categoria;
     private String descricao;
+    private String anexo;
     private String localizacao;
     private String bairro;
     private Prioridade prioridade;
@@ -56,6 +57,14 @@ public class Solicitacao {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public String getAnexo() {
+        return anexo;
+    }
+
+    public void setAnexo(String anexo) {
+        this.anexo = anexo;
     }
 
     public String getLocalizacao() {
@@ -139,6 +148,13 @@ public class Solicitacao {
         this.justificativaAtraso = justificativaAtraso;
     }
 
+    public boolean isForaDoPrazoSla() {
+        if (prazoSla == null) {
+            return false;
+        }
+        return LocalDateTime.now().isAfter(prazoSla);
+    }
+
     @Override
     public String toString() {
         return "Solicitacao{" +
@@ -146,6 +162,7 @@ public class Solicitacao {
                 ", protocolo='" + protocolo + '\'' +
                 ", categoria=" + categoria +
                 ", descricao='" + descricao + '\'' +
+                ", anexo='" + anexo + '\'' +
                 ", localizacao='" + localizacao + '\'' +
                 ", bairro='" + bairro + '\'' +
                 ", prioridade=" + prioridade +
