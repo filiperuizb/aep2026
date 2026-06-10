@@ -1,8 +1,10 @@
 target/
 backend/target/
 backend/data/
+backend/.idea/
 frontend/node_modules/
 frontend/dist/
+orcispar-master/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
