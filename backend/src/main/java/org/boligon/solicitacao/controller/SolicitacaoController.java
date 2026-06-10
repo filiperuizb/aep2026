@@ -37,43 +37,34 @@ public class SolicitacaoController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SolicitacaoResponse criar(@RequestBody CriarSolicitacaoRequest request) {
-        return SolicitacaoResponse.de(solicitacaoService.criarSolicitacao(request));
+        Solicitacao criada = solicitacaoService.criarSolicitacao(request);
+        return SolicitacaoResponse.converter(criada);
     }
 
     @GetMapping("/protocolo/{protocolo}")
     public SolicitacaoDetalheResponse buscarPorProtocolo(@PathVariable String protocolo) {
         Solicitacao solicitacao = solicitacaoService.buscarPorProtocolo(protocolo);
-        List<HistoricoResponse> historico = historicoStatusService
-                .listarPorSolicitacaoId(solicitacao.getId())
-                .stream()
-                .map(HistoricoResponse::de)
-                .toList();
-        return SolicitacaoDetalheResponse.de(solicitacao, historico);
+        List<HistoricoResponse> historico = HistoricoResponse.converterLista(
+                historicoStatusService.listarPorSolicitacaoId(solicitacao.getId())
+        );
+        return SolicitacaoDetalheResponse.converter(solicitacao, historico);
     }
 
     @GetMapping("/usuario/{usuarioId}")
     public List<SolicitacaoResponse> listarPorUsuario(@PathVariable Long usuarioId) {
-        return solicitacaoService.listarPorUsuarioId(usuarioId)
-                .stream()
-                .map(SolicitacaoResponse::de)
-                .toList();
+        return SolicitacaoResponse.converterLista(solicitacaoService.listarPorUsuarioId(usuarioId));
     }
 
     @GetMapping("/fila")
     public List<SolicitacaoResponse> obterFila() {
-        return solicitacaoService.obterFilaDeAtendimento()
-                .getSolicitacoesOrdenadas()
-                .stream()
-                .map(SolicitacaoResponse::de)
-                .toList();
+        return SolicitacaoResponse.converterLista(
+                solicitacaoService.obterFilaDeAtendimento().getSolicitacoesOrdenadas()
+        );
     }
 
     @PostMapping("/filtro")
     public List<SolicitacaoResponse> filtrar(@RequestBody FiltroSolicitacaoDTO filtro) {
-        return solicitacaoService.filtrar(filtro)
-                .stream()
-                .map(SolicitacaoResponse::de)
-                .toList();
+        return SolicitacaoResponse.converterLista(solicitacaoService.filtrar(filtro));
     }
 
     @PutMapping("/status")

@@ -6,6 +6,8 @@ import org.boligon.enums.PerfilUsuario;
 import org.boligon.exception.ValidacaoException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AuthService {
 
@@ -47,11 +49,11 @@ public class AuthService {
             throw new ValidacaoException("A senha é obrigatória.");
         }
 
-        Usuario usuario = usuarioRepository.findByEmail(email.trim().toLowerCase()).orElse(null);
-
-        if (usuario == null) {
+        Optional<Usuario> encontrado = usuarioRepository.findByEmail(email.trim().toLowerCase());
+        if (encontrado.isEmpty()) {
             throw new ValidacaoException("Usuário não encontrado.");
         }
+        Usuario usuario = encontrado.get();
 
         if (!usuario.getSenha().equals(senha)) {
             throw new ValidacaoException("Senha inválida");
@@ -68,7 +70,10 @@ public class AuthService {
         if (id == null) {
             throw new ValidacaoException("O id do usuário é obrigatório.");
         }
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new ValidacaoException("Usuário não encontrado."));
+        Optional<Usuario> encontrado = usuarioRepository.findById(id);
+        if (encontrado.isEmpty()) {
+            throw new ValidacaoException("Usuário não encontrado.");
+        }
+        return encontrado.get();
     }
 }

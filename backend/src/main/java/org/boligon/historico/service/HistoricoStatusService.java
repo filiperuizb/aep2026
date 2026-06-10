@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HistoricoStatusService {
@@ -32,8 +33,11 @@ public class HistoricoStatusService {
     public void registrarMovimentacao(HistoricoStatusDTO dto, StatusSolicitacao statusAnterior) {
         validarAtualizacaoStatus(dto);
 
-        Solicitacao solicitacao = solicitacaoRepository.findById(dto.getSolicitacaoId())
-                .orElseThrow(() -> new ValidacaoException("Solicitação não encontrada."));
+        Optional<Solicitacao> encontrada = solicitacaoRepository.findById(dto.getSolicitacaoId());
+        if (encontrada.isEmpty()) {
+            throw new ValidacaoException("Solicitação não encontrada.");
+        }
+        Solicitacao solicitacao = encontrada.get();
         Usuario responsavel = authService.buscarPorId(dto.getResponsavelId());
 
         HistoricoStatus historicoStatus = new HistoricoStatus();

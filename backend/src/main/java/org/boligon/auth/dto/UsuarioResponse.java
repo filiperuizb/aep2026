@@ -10,7 +10,7 @@ public class UsuarioResponse {
     private String email;
     private PerfilUsuario perfil;
 
-    public static UsuarioResponse de(Usuario usuario) {
+    public static UsuarioResponse converter(Usuario usuario) {
         UsuarioResponse response = new UsuarioResponse();
         response.setId(usuario.getId());
         response.setNome(usuario.getNome());

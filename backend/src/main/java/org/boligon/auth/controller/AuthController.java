@@ -23,7 +23,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public UsuarioResponse login(@RequestBody LoginRequest request) {
-        return UsuarioResponse.de(authService.login(request.getEmail(), request.getSenha()));
+        return UsuarioResponse.converter(authService.login(request.getEmail(), request.getSenha()));
     }
 
     @PostMapping("/registrar")

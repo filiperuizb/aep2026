@@ -4,6 +4,8 @@ import org.boligon.enums.StatusSolicitacao;
 import org.boligon.historico.domain.HistoricoStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HistoricoResponse {
 
@@ -14,7 +16,7 @@ public class HistoricoResponse {
     private String nomeResponsavel;
     private LocalDateTime dataMovimentacao;
 
-    public static HistoricoResponse de(HistoricoStatus historico) {
+    public static HistoricoResponse converter(HistoricoStatus historico) {
         HistoricoResponse response = new HistoricoResponse();
         response.setId(historico.getId());
         response.setStatusAnterior(historico.getStatusAnterior());
@@ -23,6 +25,14 @@ public class HistoricoResponse {
         response.setNomeResponsavel(historico.getNomeResponsavel());
         response.setDataMovimentacao(historico.getDataMovimentacao());
         return response;
+    }
+
+    public static List<HistoricoResponse> converterLista(List<HistoricoStatus> historicos) {
+        List<HistoricoResponse> resposta = new ArrayList<>();
+        for (HistoricoStatus historico : historicos) {
+            resposta.add(converter(historico));
+        }
+        return resposta;
     }
 
     public Long getId() {
