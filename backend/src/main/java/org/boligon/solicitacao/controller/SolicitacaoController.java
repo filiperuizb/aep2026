@@ -1,8 +1,10 @@
 package org.boligon.solicitacao.controller;
 
+import org.boligon.auth.service.AuthService;
 import org.boligon.historico.dto.HistoricoResponse;
 import org.boligon.historico.dto.HistoricoStatusDTO;
 import org.boligon.historico.service.HistoricoStatusService;
+import org.springframework.security.core.Authentication;
 import org.boligon.solicitacao.domain.Solicitacao;
 import org.boligon.solicitacao.dto.CriarSolicitacaoRequest;
 import org.boligon.solicitacao.dto.FiltroSolicitacaoDTO;
@@ -27,11 +29,14 @@ public class SolicitacaoController {
 
     private final SolicitacaoService solicitacaoService;
     private final HistoricoStatusService historicoStatusService;
+    private final AuthService authService;
 
     public SolicitacaoController(SolicitacaoService solicitacaoService,
-                                 HistoricoStatusService historicoStatusService) {
+                                 HistoricoStatusService historicoStatusService,
+                                 AuthService authService) {
         this.solicitacaoService = solicitacaoService;
         this.historicoStatusService = historicoStatusService;
+        this.authService = authService;
     }
 
     @PostMapping
@@ -51,7 +56,9 @@ public class SolicitacaoController {
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public List<SolicitacaoResponse> listarPorUsuario(@PathVariable Long usuarioId) {
+    public List<SolicitacaoResponse> listarPorUsuario(@PathVariable Long usuarioId,
+                                                      Authentication autenticacao) {
+        authService.validarAcessoAsSolicitacoes(usuarioId, autenticacao.getName());
         return SolicitacaoResponse.converterLista(solicitacaoService.listarPorUsuarioId(usuarioId));
     }
 

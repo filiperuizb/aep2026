@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react'
+import { api } from '../api/api'
 
 const AuthContext = createContext(null)
 
@@ -21,7 +22,12 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('observacao_usuario')
   }
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.logout()
+    } catch {
+      // sessão já expirada ou usuário anônimo
+    }
     setUsuario(null)
     setAnonimo(false)
     localStorage.removeItem('observacao_usuario')

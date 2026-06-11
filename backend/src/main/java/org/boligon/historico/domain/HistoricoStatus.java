@@ -67,7 +67,10 @@ public class HistoricoStatus {
     }
 
     public Long getSolicitacaoId() {
-        return solicitacao != null ? solicitacao.getId() : null;
+        if (solicitacao == null) {
+            return null;
+        }
+        return solicitacao.getId();
     }
 
     public StatusSolicitacao getStatusAnterior() {
@@ -103,11 +106,17 @@ public class HistoricoStatus {
     }
 
     public Long getResponsavelId() {
-        return responsavel != null ? responsavel.getId() : null;
+        if (responsavel == null) {
+            return null;
+        }
+        return responsavel.getId();
     }
 
     public String getNomeResponsavel() {
-        return responsavel != null ? responsavel.getNome() : null;
+        if (responsavel == null) {
+            return null;
+        }
+        return responsavel.getNome();
     }
 
     public LocalDateTime getDataMovimentacao() {

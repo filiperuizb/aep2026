@@ -1,5 +1,7 @@
 package org.boligon.auth.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.boligon.auth.dto.LoginRequest;
 import org.boligon.auth.dto.RegistroRequest;
 import org.boligon.auth.dto.UsuarioResponse;
@@ -22,13 +24,23 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public UsuarioResponse login(@RequestBody LoginRequest request) {
-        return UsuarioResponse.converter(authService.login(request.getEmail(), request.getSenha()));
+    public UsuarioResponse login(@RequestBody LoginRequest request,
+                                 HttpServletRequest httpRequest,
+                                 HttpServletResponse httpResponse) {
+        return UsuarioResponse.converter(
+                authService.fazerLogin(request.getEmail(), request.getSenha(), httpRequest, httpResponse)
+        );
     }
 
     @PostMapping("/registrar")
     @ResponseStatus(HttpStatus.CREATED)
     public void registrar(@RequestBody RegistroRequest request) {
         authService.registrar(request.getNome(), request.getEmail(), request.getSenha());
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        authService.encerrarSessao(request, response);
     }
 }

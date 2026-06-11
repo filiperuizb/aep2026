@@ -92,28 +92,39 @@ public class SolicitacaoService {
         if (filtro == null || filtro.isVazio()) {
             throw new ValidacaoException("Informe ao menos um critério de filtro.");
         }
-        List<Solicitacao> todas = listarTodas();
-        List<Solicitacao> resultado = new ArrayList<>();
-        String bairroFiltro = filtro.getBairro() != null ? filtro.getBairro().trim().toLowerCase() : "";
+        String bairroFiltro = "";
+        if (filtro.getBairro() != null) {
+            bairroFiltro = filtro.getBairro().trim().toLowerCase();
+        }
 
-        for (Solicitacao s : todas) {
-            if (filtro.getPrioridade() != null && s.getPrioridade() != filtro.getPrioridade()) {
-                continue;
+        List<Solicitacao> resultado = new ArrayList<>();
+        for (Solicitacao solicitacao : listarTodas()) {
+            if (passaNoFiltro(solicitacao, filtro, bairroFiltro)) {
+                resultado.add(solicitacao);
             }
-            if (filtro.getCategoria() != null && s.getCategoria() != filtro.getCategoria()) {
-                continue;
-            }
-            if (filtro.getStatus() != null && s.getStatus() != filtro.getStatus()) {
-                continue;
-            }
-            if (!bairroFiltro.isEmpty()) {
-                if (s.getBairro() == null || !s.getBairro().toLowerCase().contains(bairroFiltro)) {
-                    continue;
-                }
-            }
-            resultado.add(s);
         }
         return resultado;
+    }
+
+    private boolean passaNoFiltro(Solicitacao solicitacao, FiltroSolicitacaoDTO filtro, String bairroFiltro) {
+        if (filtro.getPrioridade() != null && solicitacao.getPrioridade() != filtro.getPrioridade()) {
+            return false;
+        }
+        if (filtro.getCategoria() != null && solicitacao.getCategoria() != filtro.getCategoria()) {
+            return false;
+        }
+        if (filtro.getStatus() != null && solicitacao.getStatus() != filtro.getStatus()) {
+            return false;
+        }
+        if (!bairroFiltro.isEmpty()) {
+            if (solicitacao.getBairro() == null) {
+                return false;
+            }
+            if (!solicitacao.getBairro().toLowerCase().contains(bairroFiltro)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Transactional
