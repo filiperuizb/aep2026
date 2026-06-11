@@ -141,7 +141,7 @@ export default function NovaSolicitacaoPage() {
 
             <Link
 
-              to={`/acompanhar?protocolo=${encodeURIComponent(sucesso.protocolo)}`}
+              to={`/acompanhar/${encodeURIComponent(sucesso.protocolo)}`}
 
               className="rounded-lg bg-brand-600 px-5 py-3 text-sm font-bold text-white"
 
