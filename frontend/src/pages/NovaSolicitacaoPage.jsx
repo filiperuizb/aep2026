@@ -23,8 +23,6 @@ export default function NovaSolicitacaoPage() {
 
     descricao: '',
 
-    anexo: '',
-
     localizacao: '',
 
     bairro: '',
@@ -34,6 +32,8 @@ export default function NovaSolicitacaoPage() {
     anonima: anonimo,
 
   })
+
+  const [anexo, setAnexo] = useState(null)
 
   const [erro, setErro] = useState('')
 
@@ -77,6 +77,35 @@ export default function NovaSolicitacaoPage() {
 
 
 
+  const handleAnexo = (event) => {
+    const file = event.target.files?.[0]
+    if (!file) {
+      setAnexo(null)
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErro('O anexo não pode ultrapassar 5 MB.')
+      event.target.value = ''
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      const resultado = reader.result
+      const separador = resultado.indexOf(',')
+      setAnexo({
+        nome: file.name,
+        tipo: file.type || 'application/octet-stream',
+        base64: separador >= 0 ? resultado.slice(separador + 1) : resultado,
+      })
+      setErro('')
+    }
+    reader.readAsDataURL(file)
+  }
+
+
+
   const handleSubmit = async (event) => {
 
     event.preventDefault()
@@ -91,7 +120,11 @@ export default function NovaSolicitacaoPage() {
 
         ...form,
 
-        anexo: form.anexo || null,
+        anexoNome: anexo?.nome || null,
+
+        anexoTipo: anexo?.tipo || null,
+
+        anexoBase64: anexo?.base64 || null,
 
         usuarioId: anonimo || form.anonima ? null : usuario?.id,
 
@@ -329,15 +362,25 @@ export default function NovaSolicitacaoPage() {
 
           <input
 
-            value={form.anexo}
+            type="file"
 
-            onChange={(e) => handleChange('anexo', e.target.value)}
+            accept="image/*,.pdf,.doc,.docx"
 
-            className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"
+            onChange={handleAnexo}
 
-            placeholder="Nome ou referência do arquivo"
+            className="w-full cursor-pointer rounded-lg border border-slate-200 px-4 py-3 text-sm file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-brand-700 hover:border-brand-300"
 
           />
+
+          {anexo && (
+
+            <p className="mt-2 text-sm text-slate-600">
+
+              Arquivo selecionado: <span className="font-semibold">{anexo.nome}</span>
+
+            </p>
+
+          )}
 
         </div>
 

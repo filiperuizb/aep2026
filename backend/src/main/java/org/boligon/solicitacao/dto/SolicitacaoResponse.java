@@ -16,12 +16,15 @@ public class SolicitacaoResponse {
     private Categoria categoria;
     private String descricao;
     private String anexo;
+    private boolean temAnexo;
     private String localizacao;
     private String bairro;
     private Prioridade prioridade;
     private StatusSolicitacao status;
     private boolean anonima;
     private Long usuarioId;
+    private String nomeSolicitante;
+    private String emailSolicitante;
     private LocalDateTime dataCriacao;
     private LocalDateTime prazoSla;
     private String justificativaAtraso;
@@ -34,13 +37,18 @@ public class SolicitacaoResponse {
         response.setProtocolo(solicitacao.getProtocolo());
         response.setCategoria(solicitacao.getCategoria());
         response.setDescricao(solicitacao.getDescricao());
-        response.setAnexo(solicitacao.getAnexo());
+        response.setAnexo(solicitacao.getAnexoNome());
+        response.setTemAnexo(solicitacao.possuiAnexo());
         response.setLocalizacao(solicitacao.getLocalizacao());
         response.setBairro(solicitacao.getBairro());
         response.setPrioridade(solicitacao.getPrioridade());
         response.setStatus(solicitacao.getStatus());
         response.setAnonima(solicitacao.isAnonima());
         response.setUsuarioId(solicitacao.getUsuarioId());
+        if (!solicitacao.isAnonima() && solicitacao.getUsuario() != null) {
+            response.setNomeSolicitante(solicitacao.getUsuario().getNome());
+            response.setEmailSolicitante(solicitacao.getUsuario().getEmail());
+        }
         response.setDataCriacao(solicitacao.getDataCriacao());
         response.setPrazoSla(solicitacao.getPrazoSla());
         response.setJustificativaAtraso(solicitacao.getJustificativaAtraso());
@@ -97,6 +105,14 @@ public class SolicitacaoResponse {
         this.anexo = anexo;
     }
 
+    public boolean isTemAnexo() {
+        return temAnexo;
+    }
+
+    public void setTemAnexo(boolean temAnexo) {
+        this.temAnexo = temAnexo;
+    }
+
     public String getLocalizacao() {
         return localizacao;
     }
@@ -143,6 +159,22 @@ public class SolicitacaoResponse {
 
     public void setUsuarioId(Long usuarioId) {
         this.usuarioId = usuarioId;
+    }
+
+    public String getNomeSolicitante() {
+        return nomeSolicitante;
+    }
+
+    public void setNomeSolicitante(String nomeSolicitante) {
+        this.nomeSolicitante = nomeSolicitante;
+    }
+
+    public String getEmailSolicitante() {
+        return emailSolicitante;
+    }
+
+    public void setEmailSolicitante(String emailSolicitante) {
+        this.emailSolicitante = emailSolicitante;
     }
 
     public LocalDateTime getDataCriacao() {

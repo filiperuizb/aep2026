@@ -39,6 +39,9 @@ export const api = {
   getPrioridades: () => request('/enums/prioridades'),
   getStatus: () => request('/enums/status'),
 
+  anexoUrl: (protocolo) =>
+    `${BASE}/solicitacoes/protocolo/${encodeURIComponent(protocolo.trim())}/anexo`,
+
   criarSolicitacao: (payload) =>
     request('/solicitacoes', {
       method: 'POST',

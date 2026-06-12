@@ -3,6 +3,7 @@ import { useAuth } from './context/AuthContext'
 import AcompanharPage from './pages/AcompanharPage'
 import CidadaoPage from './pages/CidadaoPage'
 import GestorPage from './pages/GestorPage'
+import GestorProtocoloPage from './pages/GestorProtocoloPage'
 import LoginPage from './pages/LoginPage'
 import MinhasSolicitacoesPage from './pages/MinhasSolicitacoesPage'
 import NovaSolicitacaoPage from './pages/NovaSolicitacaoPage'
@@ -56,6 +57,14 @@ export default function App() {
               <MinhasSolicitacoesPage />
             </RotaLogado>
           </RotaCidadao>
+        }
+      />
+      <Route
+        path="/gestor/:protocolo"
+        element={
+          <RotaGestor>
+            <GestorProtocoloPage />
+          </RotaGestor>
         }
       />
       <Route

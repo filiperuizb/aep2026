@@ -21,11 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class SolicitacaoService {
+
+    private static final int TAMANHO_MAXIMO_ANEXO = 5 * 1024 * 1024;
 
     private final SolicitacaoRepository solicitacaoRepository;
     private final HistoricoStatusService historicoStatusService;
@@ -61,6 +64,7 @@ public class SolicitacaoService {
         return salva;
     }
 
+    @Transactional(readOnly = true)
     public Solicitacao buscarPorProtocolo(String protocolo) {
         if (protocolo == null || protocolo.trim().isEmpty()) {
             throw new ValidacaoException("É obrigatório informar um protocolo nessa busca.");
@@ -73,6 +77,7 @@ public class SolicitacaoService {
         return encontrada.get();
     }
 
+    @Transactional(readOnly = true)
     public List<Solicitacao> listarPorUsuarioId(Long id) {
         if (id == null) {
             throw new ValidacaoException("É obrigatório informar o id do Usuário");
@@ -80,6 +85,7 @@ public class SolicitacaoService {
         return solicitacaoRepository.findByUsuario_IdOrderByDataCriacaoDesc(id);
     }
 
+    @Transactional(readOnly = true)
     public List<Solicitacao> listarTodas() {
         return solicitacaoRepository.findAllByOrderByDataCriacaoDesc();
     }
@@ -187,12 +193,43 @@ public class SolicitacaoService {
         Solicitacao solicitacao = new Solicitacao();
         solicitacao.setCategoria(request.getCategoria());
         solicitacao.setDescricao(request.getDescricao());
-        solicitacao.setAnexo(request.getAnexo());
+        aplicarAnexo(solicitacao, request);
         solicitacao.setLocalizacao(request.getLocalizacao());
         solicitacao.setBairro(request.getBairro());
         solicitacao.setPrioridade(request.getPrioridade());
         solicitacao.setAnonima(request.isAnonima());
         return solicitacao;
+    }
+
+    private void aplicarAnexo(Solicitacao solicitacao, CriarSolicitacaoRequest request) {
+        if (request.getAnexoBase64() == null || request.getAnexoBase64().isBlank()) {
+            return;
+        }
+
+        String base64 = request.getAnexoBase64().trim();
+        int separador = base64.indexOf(',');
+        if (separador >= 0) {
+            base64 = base64.substring(separador + 1);
+        }
+
+        byte[] dados;
+        try {
+            dados = Base64.getDecoder().decode(base64);
+        } catch (IllegalArgumentException ex) {
+            throw new ValidacaoException("O anexo enviado é inválido.");
+        }
+
+        solicitacao.setAnexoDados(dados);
+        solicitacao.setAnexoNome(
+                request.getAnexoNome() != null && !request.getAnexoNome().isBlank()
+                        ? request.getAnexoNome().trim()
+                        : "anexo"
+        );
+        solicitacao.setAnexoTipo(
+                request.getAnexoTipo() != null && !request.getAnexoTipo().isBlank()
+                        ? request.getAnexoTipo().trim()
+                        : "application/octet-stream"
+        );
     }
 
     private Usuario resolverUsuario(CriarSolicitacaoRequest request) {
@@ -222,14 +259,21 @@ public class SolicitacaoService {
         }
         solicitacao.setDescricao(descricao);
 
-        if (solicitacao.getAnexo() != null && !solicitacao.getAnexo().isBlank()) {
-            String anexo = solicitacao.getAnexo().trim();
-            if (anexo.length() > 255) {
-                throw new ValidacaoException("O caminho ou nome do anexo não pode ultrapassar 255 caracteres.");
+        if (solicitacao.possuiAnexo()) {
+            if (solicitacao.getAnexoNome() == null || solicitacao.getAnexoNome().isBlank()) {
+                throw new ValidacaoException("O nome do anexo é obrigatório quando um arquivo é enviado.");
             }
-            solicitacao.setAnexo(anexo);
+            if (solicitacao.getAnexoNome().length() > 255) {
+                throw new ValidacaoException("O nome do anexo não pode ultrapassar 255 caracteres.");
+            }
+            if (solicitacao.getAnexoDados().length > TAMANHO_MAXIMO_ANEXO) {
+                throw new ValidacaoException("O anexo não pode ultrapassar 5 MB.");
+            }
+            solicitacao.setAnexoNome(solicitacao.getAnexoNome().trim());
         } else {
-            solicitacao.setAnexo(null);
+            solicitacao.setAnexoNome(null);
+            solicitacao.setAnexoTipo(null);
+            solicitacao.setAnexoDados(null);
         }
 
         if (solicitacao.getLocalizacao() == null || solicitacao.getLocalizacao().trim().isEmpty()) {

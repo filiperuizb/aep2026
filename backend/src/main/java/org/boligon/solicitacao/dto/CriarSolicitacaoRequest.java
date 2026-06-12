@@ -7,7 +7,9 @@ public class CriarSolicitacaoRequest {
 
     private Categoria categoria;
     private String descricao;
-    private String anexo;
+    private String anexoNome;
+    private String anexoTipo;
+    private String anexoBase64;
     private String localizacao;
     private String bairro;
     private Prioridade prioridade;
@@ -30,12 +32,28 @@ public class CriarSolicitacaoRequest {
         this.descricao = descricao;
     }
 
-    public String getAnexo() {
-        return anexo;
+    public String getAnexoNome() {
+        return anexoNome;
     }
 
-    public void setAnexo(String anexo) {
-        this.anexo = anexo;
+    public void setAnexoNome(String anexoNome) {
+        this.anexoNome = anexoNome;
+    }
+
+    public String getAnexoTipo() {
+        return anexoTipo;
+    }
+
+    public void setAnexoTipo(String anexoTipo) {
+        this.anexoTipo = anexoTipo;
+    }
+
+    public String getAnexoBase64() {
+        return anexoBase64;
+    }
+
+    public void setAnexoBase64(String anexoBase64) {
+        this.anexoBase64 = anexoBase64;
     }
 
     public String getLocalizacao() {

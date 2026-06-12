@@ -79,6 +79,19 @@ function ConteudoAcompanhar({ protocolo, setProtocolo, detalhe, erro, carregando
               />
             </div>
 
+            {s.temAnexo && (
+              <div className="mt-4">
+                <a
+                  href={api.anexoUrl(s.protocolo)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center rounded-lg border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-100"
+                >
+                  Baixar anexo{s.anexo ? `: ${s.anexo}` : ''}
+                </a>
+              </div>
+            )}
+
             {s.justificativaAtraso && (
               <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
                 <span className="font-bold">Justificativa de atraso:</span> {s.justificativaAtraso}

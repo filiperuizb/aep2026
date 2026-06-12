@@ -2,6 +2,7 @@ package org.boligon.solicitacao.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -37,7 +38,13 @@ public class Solicitacao {
     private String descricao;
 
     @Column(length = 255)
-    private String anexo;
+    private String anexoNome;
+
+    @Column(length = 100)
+    private String anexoTipo;
+
+    @Lob
+    private byte[] anexoDados;
 
     @Column(nullable = false, length = 255)
     private String localizacao;
@@ -104,12 +111,32 @@ public class Solicitacao {
         this.descricao = descricao;
     }
 
-    public String getAnexo() {
-        return anexo;
+    public String getAnexoNome() {
+        return anexoNome;
     }
 
-    public void setAnexo(String anexo) {
-        this.anexo = anexo;
+    public void setAnexoNome(String anexoNome) {
+        this.anexoNome = anexoNome;
+    }
+
+    public String getAnexoTipo() {
+        return anexoTipo;
+    }
+
+    public void setAnexoTipo(String anexoTipo) {
+        this.anexoTipo = anexoTipo;
+    }
+
+    public byte[] getAnexoDados() {
+        return anexoDados;
+    }
+
+    public void setAnexoDados(byte[] anexoDados) {
+        this.anexoDados = anexoDados;
+    }
+
+    public boolean possuiAnexo() {
+        return anexoDados != null && anexoDados.length > 0;
     }
 
     public String getLocalizacao() {
