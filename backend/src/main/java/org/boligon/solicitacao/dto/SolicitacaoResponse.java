@@ -6,6 +6,8 @@ import org.boligon.enums.StatusSolicitacao;
 import org.boligon.solicitacao.domain.Solicitacao;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SolicitacaoResponse {
 
@@ -26,7 +28,7 @@ public class SolicitacaoResponse {
     private boolean foraDoPrazoSla;
     private StatusSolicitacao proximoStatus;
 
-    public static SolicitacaoResponse de(Solicitacao solicitacao) {
+    public static SolicitacaoResponse converter(Solicitacao solicitacao) {
         SolicitacaoResponse response = new SolicitacaoResponse();
         response.setId(solicitacao.getId());
         response.setProtocolo(solicitacao.getProtocolo());
@@ -43,18 +45,16 @@ public class SolicitacaoResponse {
         response.setPrazoSla(solicitacao.getPrazoSla());
         response.setJustificativaAtraso(solicitacao.getJustificativaAtraso());
         response.setForaDoPrazoSla(solicitacao.isForaDoPrazoSla());
-        response.setProximoStatus(calcularProximoStatus(solicitacao.getStatus()));
+        response.setProximoStatus(solicitacao.getStatus().obterProximo());
         return response;
     }
 
-    private static StatusSolicitacao calcularProximoStatus(StatusSolicitacao atual) {
-        return switch (atual) {
-            case ABERTO -> StatusSolicitacao.TRIAGEM;
-            case TRIAGEM -> StatusSolicitacao.EM_EXECUCAO;
-            case EM_EXECUCAO -> StatusSolicitacao.RESOLVIDO;
-            case RESOLVIDO -> StatusSolicitacao.ENCERRADO;
-            case ENCERRADO -> null;
-        };
+    public static List<SolicitacaoResponse> converterLista(List<Solicitacao> solicitacoes) {
+        List<SolicitacaoResponse> resposta = new ArrayList<>();
+        for (Solicitacao solicitacao : solicitacoes) {
+            resposta.add(converter(solicitacao));
+        }
+        return resposta;
     }
 
     public Long getId() {

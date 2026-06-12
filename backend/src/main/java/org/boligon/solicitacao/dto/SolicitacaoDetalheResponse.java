@@ -10,9 +10,9 @@ public class SolicitacaoDetalheResponse {
     private SolicitacaoResponse solicitacao;
     private List<HistoricoResponse> historico;
 
-    public static SolicitacaoDetalheResponse de(Solicitacao solicitacao, List<HistoricoResponse> historico) {
+    public static SolicitacaoDetalheResponse converter(Solicitacao solicitacao, List<HistoricoResponse> historico) {
         SolicitacaoDetalheResponse response = new SolicitacaoDetalheResponse();
-        response.setSolicitacao(SolicitacaoResponse.de(solicitacao));
+        response.setSolicitacao(SolicitacaoResponse.converter(solicitacao));
         response.setHistorico(historico);
         return response;
     }

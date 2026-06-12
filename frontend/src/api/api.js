@@ -2,6 +2,7 @@ const BASE = 'http://localhost:8080/api'
 
 async function request(path, options = {}) {
   const response = await fetch(`${BASE}${path}`, {
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,
@@ -27,6 +28,11 @@ export const api = {
     request('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, senha }),
+    }),
+
+  logout: () =>
+    request('/auth/logout', {
+      method: 'POST',
     }),
 
   getCategorias: () => request('/enums/categorias'),

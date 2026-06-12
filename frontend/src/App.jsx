@@ -31,6 +31,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/acompanhar" element={<AcompanharPage />} />
+      <Route path="/acompanhar/:protocolo" element={<AcompanharPage />} />
       <Route
         path="/cidadao"
         element={

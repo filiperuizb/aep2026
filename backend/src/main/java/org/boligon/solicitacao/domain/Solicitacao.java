@@ -161,7 +161,10 @@ public class Solicitacao {
     }
 
     public Long getUsuarioId() {
-        return usuario != null ? usuario.getId() : null;
+        if (usuario == null) {
+            return null;
+        }
+        return usuario.getId();
     }
 
     public LocalDateTime getDataCriacao() {
